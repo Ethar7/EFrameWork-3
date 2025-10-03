@@ -1,1 +1,315 @@
+﻿using Session03.Data.DataSeed;
+using Session03.Data;
+using Session03.Data.Models;
 
+namespace Session03
+{
+    //Install Microsoft.EntityFrameworkCore.Proxies For Lazy Loading
+    internal class Program
+    {
+        static void Main()
+        {
+            using AlaaCompanyDbContext dbContext = new AlaaCompanyDbContext();
+
+            AlaaCompanyDbContextSeed.Seed(dbContext);
+
+            //Iterview Question
+            #region Loading Navigational Properties
+
+            #region 1.  Explicit Loading
+
+            //Explicit Loading M4 Bgeb eldata 8er lw ana tlabt da , btb3t 2 requests
+            #region Example 01
+
+            //var employee = (from E in dbContext.Employees
+            //                where E.Code == 1
+            //                select E).FirstOrDefault();
+            //
+            //if (employee is not null)
+            //{
+            //    //Entry takes record 
+            //    //Reference => Relation One
+            //    dbContext.Entry(employee).Reference(nameof(Employee.Department)).Load();
+            //    Console.WriteLine($"Employee: {employee.Name}, Department: {employee.Department?.Name ?? "NA"}");
+            //
+            //}
+
+            #endregion
+
+            #region Example 02
+
+            //var department = (from D in dbContext.Departments
+            //                  where D.DeptId == 10
+            //                  select D).FirstOrDefault();
+            //
+            //if (department != null)
+            //{
+            //    Console.WriteLine($"Department: Id = {department.DeptId}, Name = {department?.Name ?? "NA"}");
+            //
+            //    //Collection => Relation many
+            //    dbContext.Entry(department).Collection(nameof(Department.Employees)).Load();
+            //
+            //    foreach (var employee in department.Employees)
+            //        Console.WriteLine($"....Employee: Code = {employee.Code}, NAme = {employee.Name}");
+            //}
+
+            #endregion
+
+            #endregion
+
+            #region 2.Eager Loading
+            // same Request 
+            #region Example 01
+
+            //var employee = (from E in dbContext.Employees.Include(E => E.Department)./*ThenInclude() [Hd5ol Gwa El Dept]*//*.Include("Project")*///Hy3ml Join Bs Ana Hst5dm El EntityFramework Feature'Include'
+            //                where E.Code == 1
+            //                select E).FirstOrDefault();
+
+            //if (employee is not null)
+            //{
+            //    Console.WriteLine($"Employee: {employee.Name}, Department: {employee.Department?.Name ?? "NA"}");
+
+            //}
+
+            #endregion
+
+            #region Example 02
+
+            //var department = (from D in dbContext.Departments.Include(D => D.Employees)
+            //                  where D.DeptId == 10
+            //                  select D).FirstOrDefault();
+
+            //if (department != null)
+            //{
+            //    Console.WriteLine($"Department: Id = {department.DeptId}, Name = {department?.Name ?? "NA"}");
+
+            //    foreach (var employee in department.Employees)
+            //        Console.WriteLine($"....Employee: Code = {employee.Code}, NAme = {employee.Name}");
+            //}
+
+            #endregion
+
+            #endregion
+
+            #region 3. Lazy Loading
+
+            #region Example 01
+
+            //var employee = (from E in dbContext.Employees
+            //                where E.Code == 1
+            //                select E).FirstOrDefault();
+            //
+            //if (employee is not null)
+            //{
+            //    Console.WriteLine($"Employee: {employee.Name}, Department: {employee.Department?.Name ?? "NA"}");
+            //
+            //}
+
+            #endregion
+
+            #region Example 02
+
+            //var department = (from D in dbContext.Departments
+            //                  where D.DeptId == 10
+            //                  select D).FirstOrDefault();
+
+            //if (department != null)
+            //{
+            //    Console.WriteLine($"Department: Id = {department.DeptId}, Name = {department?.Name ?? "NA"}");
+
+            //    foreach (var employee in department.Employees)
+            //        Console.WriteLine($"....Employee: Code = {employee.Code}, NAme = {employee.Name}");
+            //}
+
+            #endregion
+
+            #endregion
+            #endregion
+
+            #region LINQ - Join Operators [Join(), GroupJoin()]
+
+            //Join => Inner Join .  GroupJoin  => Join Then Grouping, mmkn a3ml beha left outer join
+            #region Inner Join
+            //LINQ Operators Extenstion methods to Enemurable lw Ana sh8ala local Sequence 8er kda  yb2a querable
+
+            // var Result = from D in dbContext.Departments
+            //              join E in dbContext.Employees
+            //              on D.DeptId equals E.DepartmentDeptId
+            //              select new
+            //              {
+            //                  EmployeeId = E.Code,
+            //                  EmployeeName = E.Name,
+            //                  DepartmentId = D.DeptId,
+            //                  DepartmentName = D.Name
+            //              };
+            //
+            // Result = dbContext.Departments.Join(
+            //     dbContext.Employees,
+            //     D => D.DeptId,//Outer Key Selector
+            //     E => E.DepartmentDeptId,//Inner Key Selector
+            //     (D, E) => new
+            // {
+            //     EmployeeId = E.Code,
+            //     EmployeeName = E.Name,
+            //     DepartmentId = D.DeptId,
+            //     DepartmentName = D.Name
+            // }); 
+            //
+            // foreach (var item in Result) 
+            //     Console.WriteLine($"Employee: {item.EmployeeId}, {item.EmployeeName} On Department: {item.DepartmentId},{item.DepartmentName}"); 
+
+            #endregion
+
+            #region Group Join
+            //inner join then grouping 
+            #region Example 01
+
+            //var Result = dbContext.Departments.GroupJoin(
+            //    dbContext.Employees,
+            //    D => D.DeptId,
+            //    E => E.DepartmentDeptId,
+            //    (D, Employees) => new
+            //    {
+            //        Department = D,
+            //        Employees
+            //    }).Where(X => X.Employees.Count() > 0);
+
+            //Result = from D in dbContext.Departments
+            //         join E in dbContext.Employees
+            //         on D.DeptId equals E.DepartmentDeptId into Emps
+            //         select new
+            //         {
+            //             Department = D,
+            //             Employees = Emps,
+            //         } into x
+            //         where x.Employees.Count() > 0
+            //         select x;
+
+            //foreach (var item in Result)
+            //{
+            //    Console.WriteLine($"Department: Id = {item.Department.DeptId},Name = {item.Department.Name}");
+            //    foreach (var emp in item.Employees)
+            //    {
+            //        Console.WriteLine($"Emolyee: Id = {emp.Code}, Name = {emp.Name}");
+            //    }
+            //}
+
+            #endregion
+
+            #region Example 02
+
+            //var Result = dbContext.Employees.GroupJoin(
+            //    dbContext.Departments,
+            //    E => E.DepartmentDeptId,
+            //    D => D.DeptId,
+            //    (E, Departments) => new
+            //    {
+            //        Employee = E,
+            //        Departments
+            //    }).Where(X => X.Departments.Count() > 0);
+
+            //Result = from E in dbContext.Employees
+            //         join D in dbContext.Departments
+            //         on E.DepartmentDeptId equals D.DeptId into Depts
+            //         select new
+            //         {
+            //             Employee = E,
+            //             Departments = Depts
+            //         } into x
+            //         where x.Departments.Count() > 0
+            //         select x; 
+
+            #endregion
+
+            #endregion
+
+            #region Left Outer Join 
+
+            #region Example 01
+
+            //var Result = dbContext.Departments.GroupJoin(
+            //    dbContext.Employees,
+            //    D => D.DeptId,
+            //    E => E.DepartmentDeptId,
+            //    (Department, Employees) => new
+            //    {
+            //        Department,
+            //        Employees = Employees.DefaultIfEmpty()
+            //    }).SelectMany(X => X.Employees, (X, Employee) => new { X.Department, Employee });
+
+
+            //Result = from D in dbContext.Departments join E in dbContext.Employees
+            //         on D.DeptId equals E.DepartmentDeptId into Employees
+            //         select new
+            //         {
+            //             Department = D,
+            //             Employees = Employees.DefaultIfEmpty()
+            //         } into X
+            //         from Employee in X.Employees
+            //         select new { X.Department, Employee }; 
+
+            #endregion
+
+            #region Example 02 
+
+            //var Result = dbContext.Employees.GroupJoin
+            //    (dbContext.Departments,
+            //    E => E.DepartmentDeptId,
+            //    D => D.DeptId,
+            //    (Employee, Departments) => new
+            //    {
+            //        Employee,
+            //        Departments = Departments.DefaultIfEmpty()
+            //    }).SelectMany(X => X.Departments, (X, Department) => new { X.Employee, Department });
+
+
+            //foreach (var result in Result) 
+            //    Console.WriteLine($"Employee: Id = {result.Employee.Code}, Name = {result.Employee.Name} ," +
+            //        $" Department: Id = {result.Department?.Name ?? "No Department"}");
+
+            //Result = from E in dbContext.Employees join D in dbContext.Departments
+            //         on E.DepartmentDeptId equals D.DeptId into Departments
+            //         select new
+            //         {
+            //             Employee = E,
+            //             Departments = Departments.DefaultIfEmpty()
+            //         } into X
+            //         from Department in X.Departments
+            //         select new { X.Employee ,  Department }; 
+
+            #endregion
+
+            #endregion
+
+            #region Cross Join
+
+            //var Result = from E in dbContext.Employees
+            //             from D in dbContext.Departments
+            //             select new
+            //             {
+            //                 Employee = E,
+            //                 Department = D
+            //             };
+
+            //Result = dbContext.Employees.SelectMany(E => dbContext.Departments.Select(D => new { Employee = E, Department = D }));
+
+            //foreach (var result in Result)
+            //    Console.WriteLine($"Employee: {result.Employee.Name}, Department: {result.Department.Name}");
+
+            #endregion
+
+            #endregion
+
+            #region View
+            //El View Lazm M3ah DbSet
+
+            //var Result = dbContext.EmployeeDepartmentView;
+
+            //foreach (var item in Result)
+            //    Console.WriteLine($"Employee: {item.EmployeeName}, Department: {item.DepartmentName}");
+
+            #endregion
+
+        }
+    }
+}

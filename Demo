@@ -300,15 +300,7 @@ namespace Session03
 
             #endregion
 
-            #region View
-            //El View Lazm M3ah DbSet
 
-            //var Result = dbContext.EmployeeDepartmentView;
-
-            //foreach (var item in Result)
-            //    Console.WriteLine($"Employee: {item.EmployeeName}, Department: {item.DepartmentName}");
-
-            #endregion
 
         }
     }
